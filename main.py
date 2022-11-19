@@ -73,13 +73,18 @@ def generate_pq_matrix(filename, pq_dict):
     return pq_dict
 
 
+def format_df(matrix):
+    df = pd.DataFrame.from_dict(matrix)
+    df = df.div(df.sum(axis=1), axis=0)
+    df = df.replace(np.nan, 0)
+    df = df.rename(columns={" ": "space"}, index={" ": "space"})
+    df = df.round(6)
+    return df
+
+
 if __name__ == '__main__':
     for filename in os.listdir(input_dir_raw):
         write_formatted_text(filename)
         pq_matrix = generate_pq_matrix(filename, set_pq_dict())
-        pq_df = pd.DataFrame.from_dict(pq_matrix)
-        pq_df = pq_df.div(pq_df.sum(axis=1), axis=0)
-        pq_df = pq_df.replace(np.nan, 0)
-        pq_df = pq_df.rename(columns={" ": "space"}, index={" ": "space"})
-        pq_df = pq_df.round(6)
+        pq_df = format_df(pq_matrix)
         pq_df.to_csv(os.path.join(output_dir, filename))
