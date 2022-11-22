@@ -11,8 +11,10 @@ output_dir = "output"
 
 q_dict = {"a": 0, "b": 0, "c": 0, "č": 0, "ć": 0, "d": 0, "dž": 0, "đ": 0, "e": 0, "f": 0,
           "g": 0, "h": 0, "i": 0, "j": 0, "k": 0, "l": 0, "lj": 0, "m": 0, "n": 0, "nj": 0,
-          "o": 0, "p": 0, "r": 0, "s": 0, "š": 0, "t": 0, "u": 0, "v": 0, "z": 0, "ž": 0,
-          " ": 0, "w": 0, "x": 0, "y": 0}
+          "o": 0, "p": 0, "r": 0, "s": 0, "š": 0, "t": 0, "u": 0, "v": 0, "z": 0, "ž": 0, " ": 0}
+
+symbols = ["a", "b", "c", "č", "ć", "d", "đ", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "nj", "o", "p", "r",
+           "s", "š", "t", "u", "v", "z", "ž"]
 
 
 def set_pq_dict():
@@ -23,7 +25,7 @@ def set_pq_dict():
             "l": q_dict.copy(), "lj": q_dict.copy(), "m": q_dict.copy(), "n": q_dict.copy(), "nj": q_dict.copy(),
             "o": q_dict.copy(), "p": q_dict.copy(), "r": q_dict.copy(), "s": q_dict.copy(), "š": q_dict.copy(),
             "t": q_dict.copy(), "u": q_dict.copy(), "v": q_dict.copy(), "z": q_dict.copy(), "ž": q_dict.copy(),
-            " ": q_dict.copy(), "w": q_dict.copy(), "x": q_dict.copy(), "y": q_dict.copy()}
+            " ": q_dict.copy()}
 
 
 def write_formatted_text(filename):
@@ -40,7 +42,11 @@ def write_formatted_text(filename):
         text = text.translate(str.maketrans("", "", string.punctuation))  # remove punctuation
         text = re.sub("[–“”]", "", text)  # remove hyphens, quotes
         text = "".join([i for i in text if not i.isdigit()])  # remove digits
-        text = " ".join(text.split())  # remove whitespace (newlines, tabs, multiple spaces...)
+
+        text_hr = [word for word in text.split()
+                   if set(word).issubset(set(symbols))]  # remove words with non-hr symbols
+        print(text_hr)
+        text = " ".join(text_hr)  # remove whitespace (newlines, tabs, multiple spaces...)
     f_r.close()
 
     with open(filepath_w, "w") as f_w:
@@ -87,4 +93,4 @@ if __name__ == '__main__':
         write_formatted_text(filename)
         pq_matrix = generate_pq_matrix(filename, set_pq_dict())
         pq_df = format_df(pq_matrix)
-        pq_df.to_csv(os.path.join(output_dir, filename))
+        pq_df.to_csv(os.path.join(output_dir, filename.replace("txt", "csv")))
