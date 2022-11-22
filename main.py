@@ -45,7 +45,6 @@ def write_formatted_text(filename):
 
         text_hr = [word for word in text.split()
                    if set(word).issubset(set(symbols))]  # remove words with non-hr symbols
-        print(text_hr)
         text = " ".join(text_hr)  # remove whitespace (newlines, tabs, multiple spaces...)
     f_r.close()
 
@@ -84,7 +83,6 @@ def format_df(matrix):
     df = df.div(df.sum(axis=1), axis=0)
     df = df.replace(np.nan, 0)
     df = df.rename(columns={" ": "space"}, index={" ": "space"})
-    df = df.round(6)
     return df
 
 
@@ -93,4 +91,4 @@ if __name__ == '__main__':
         write_formatted_text(filename)
         pq_matrix = generate_pq_matrix(filename, set_pq_dict())
         pq_df = format_df(pq_matrix)
-        pq_df.to_csv(os.path.join(output_dir, filename.replace("txt", "csv")))
+        pq_df.to_csv(os.path.join(output_dir, filename.replace("txt", "csv")), float_format="%.1E")
